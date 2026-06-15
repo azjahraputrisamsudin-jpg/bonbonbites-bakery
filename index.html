@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BonbonBites | Premium Bakery & Pastry</title>
+    <style>
+        /* --- Pengaturan Dasar & Google Fonts --- */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body { 
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #1e293b; 
+            min-height: 100vh;
+        }
+        
+        /* --- Navigasi / Header --- */
+        header { 
+            background-color: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px);
+            padding: 15px 5%; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 2px 20px rgba(0,0,0,0.04); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
+        
+        .logo-img { height: 100px; width: auto; }
+        
+        nav { display: flex; align-items: center; gap: 15px; }
+        nav a { text-decoration: none; color: #64748b; font-weight: 600; font-size: 14px; cursor: pointer; }
+        nav a:hover { color: #b45309; }
+
+        /* --- TOMBOL ADMIN --- */
+        .admin-nav-btn {
+            font-size: 18px;
+            padding: 8px 10px;
+            border-radius: 12px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+        .admin-nav-btn:hover {
+            background: #e2e8f0;
+            transform: scale(1.05);
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 20px;
+            cursor: pointer;
+            user-select: none;
+            background: #fef3c7;
+            padding: 8px 12px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        #cart-count {
+            position: absolute;
+            top: -5px; right: -5px;
+            background: #dc2626; color: white;
+            border-radius: 50%; padding: 2px 6px;
+            font-size: 10px; font-weight: 700;
+        }
+
+        /* --- Banner Atas --- */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;   
+            text-align: center;
+            padding: 50px 20px;
+            background: transparent;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            font-size: 15px;
+            color: #ffffff;
+            text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* --- PANEL DASHBOARD ADMIN --- */
+        #admin-panel {
+            display: none; max-width: 800px; margin: 30px auto; padding: 25px;
+            background: #ffffff; border: 2px dashed #b45309; border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .admin-form-group {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 15px;
+        }
+        .admin-input-field {
+            padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; width: 100%;
+        }
+        .admin-action-btn {
+            background: #dc2626; color: white; border: none; padding: 10px 15px; 
+            border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px;
+        }
+        .admin-action-btn.btn-add { background: #16a34a; }
+
+        /* --- Bagian Menu Grid --- */
+        .menu-container { max-width: 800px; margin: 30px auto; padding: 0 15px; scroll-margin-top: 90px; }
+        .menu-container h2 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 25px; color:#ffffff; text-align: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        
+        .menu-card { 
+            background: white; border-radius: 16px; overflow: hidden; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; 
+            display: flex; flex-direction: column; position: relative;
+        }
+        
+        /* Efek pointer kursor saat mengarah ke gambar */
+        .product-img-wrapper { width: 100%; height: 150px; background: #e2e8f0; position: relative; cursor: zoom-in; }
+        .product-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s ease; }
+        .product-img-wrapper:hover .product-img { transform: scale(1.05); }
+        
+        .menu-info { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
+        .menu-card h3 { font-size: 14px; color: #1e293b; margin-bottom: 6px; font-weight: 700; text-align: left; }
+        .price { font-size: 15px; font-weight: 800; color: #1e293b; text-align: left; margin-top: auto; margin-bottom: 12px; }
+
+        /* --- AREA TOMBOL (+) MELAYANG --- */
+        .action-container { 
+            position: absolute; bottom: 75px; right: 12px; z-index: 10;
+        }
+        .add-initial-btn {
+            background: #ffffff; color: #16a34a; border: 1px solid #e2e8f0;
+            width: 36px; height: 36px; border-radius: 50%; font-size: 20px;
+            font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        /* Tombol Admin di Kartu */
+        .admin-card-controls {
+            display: none; background: #fef2f2; padding: 8px; gap: 8px; justify-content: space-between;
+            border-top: 1px dashed #fca5a5;
+        }
+        .btn-card-edit { background: #eab308; color: white; border: none; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; }
+        .btn-card-del { background: #dc2626; color: white; border: none; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; }
+
+        /* --- FLOATING GREEN BAR --- */
+        .floating-cart-bar {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 500px; background: #16a34a; color: white;
+            padding: 15px 20px; border-radius: 25px; display: none; 
+            justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 25px rgba(22, 163, 74, 0.3); z-index: 999; cursor: pointer;
+        }
+        .floating-left { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+        .floating-right { font-size: 15px; font-weight: 700; }
+
+        /* --- CSS MODAL / POP-UP --- */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); justify-content: center; align-items: flex-end; z-index: 1000;
+        }
+        .modal-content {
+            background: white; width: 100%; max-width: 500px; padding: 25px;
+            border-radius: 24px 24px 0 0; max-height: 75vh; overflow-y: auto;
+        }
+        .close-btn { float: right; font-size: 22px; cursor: pointer; color: #94a3b8; }
+        
+        /* --- POPUP ZOOM GAMBAR --- */
+        .image-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.75); justify-content: center; align-items: center; z-index: 2000;
+            padding: 20px;
+        }
+        .image-modal-content {
+            background: transparent; max-width: 90%; max-height: 80vh; border-radius: 12px; overflow: hidden;
+            position: relative; display: flex; flex-direction: column; align-items: center;
+        }
+        .image-modal-content img {
+            max-width: 100%; max-height: 70vh; object-fit: contain; border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .image-modal-title {
+            color: white; margin-top: 15px; font-size: 18px; font-weight: 700; text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+            text-align: center;
+        }
+        .image-close-btn {
+            position: absolute; top: -35px; right: 0; color: white; font-size: 30px; cursor: pointer; font-weight: bold;
+        }
+
+        /* --- STYLE PILIHAN RASA --- */
+        .variant-header { margin-bottom: 15px; }
+        .variant-header h3 { font-size: 18px; font-weight: 800; color: #1e293b; }
+        .variant-header .base-price { font-size: 14px; color: #64748b; margin-top: 2px; }
+        
+        .variant-section-title {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #f8fafc; padding: 10px 12px; border-radius: 8px;
+            font-size: 13px; font-weight: 700; color: #475569; margin: 15px 0 10px 0;
+        }
+        .badge-required { background: #dbeafe; color: #1d4ed8; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+
+        .variant-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 8px; border-bottom: 1px solid #f1f5f9; cursor: pointer;
+        }
+        .variant-item:last-child { border-bottom: none; }
+        
+        .variant-left { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #334155; font-weight: 500; }
+        .variant-left input[type="checkbox"] { width: 18px; height: 18px; accent-color: #16a34a; cursor: pointer; }
+        .variant-price-add { font-size: 13px; font-weight: 600; color: #64748b; }
+
+        .cart-summary-item { display: flex; flex-direction: column; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .summary-main { display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; }
+        .summary-details { font-size: 12px; color: #64748b; margin-top: 4px; padding-left: 5px; border-left: 2px solid #e2e8f0; }
+        
+        .checkout-final-btn {
+            width: 100%; background: #16a34a; color: white; border: none;
+            padding: 14px; border-radius: 12px; font-weight: 700; margin-top: 20px; cursor: pointer; font-size: 15px;
+        }
+        .checkout-final-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        .login-input {
+            width: 100%; padding: 12px; margin: 8px 0 15px 0;
+            border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px;
+        }
+
+        /* --- STYLE GOOGLE MAPS & JAM OPERASIONAL --- */
+        .info-container {
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+        }
+
+        .maps-container { flex: 2; }
+        .maps-container h2 {
+            font-family: 'Playfair Display', serif; font-size: 24px; color: #ffffff;
+            text-align: center; margin-bottom: 20px; text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
+        }
+        .responsive-maps iframe { width: 100%; height: 350px; border: 0; border-radius: 16px; }
+
+        .jam-operasional { flex: 1; }
+        .jam-operasional h2 {
+            font-family: 'Playfair Display', serif; font-size: 24px; color: #ffffff;
+            text-align: center; margin-bottom: 20px; text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
+        }
+        .jam-box {
+            background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 16px;
+            padding: 20px; margin-bottom: 15px; text-align: center;
+        }
+        .jam-box p { color: #ffffff; font-size: 18px; font-weight: bold; margin-bottom: 8px; }
+        .jam-box span { color: #ffffff; font-size: 16px; }
+
+        footer { 
+    background-color: #1e293b; 
+    color: #94a3b8; 
+    text-align: center; 
+    padding: 30px 20px; 
+    margin-top: 60px; 
+    font-size: 13px;
+}
+
+/* ===== ABOUT US ===== */
+
+#about{
+    padding: 70px 20px;
+}
+
+.about-card{
+    max-width: 850px;
+    margin: auto;
+    padding: 45px 55px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 28px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+
+.about-card h2{
+    text-align: center;
+    color:black(26, 90%, 37%);
+    font-size: 30px;
+    margin-bottom: 35px;
+    font-family: 'Playfair Display', serif;
+}
+
+.about-text{
+    font-size: 15px;
+    line-height: 1.9;
+    color: #374151;
+    text-align: justify;
+    margin-bottom: 22px;
+    text-indent: 35px;
+}
+
+.about-text:last-child{
+    margin-bottom: 0;
+}  
+
+
+        @media (max-width: 768px) {
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+}
+    </style>
+</head>
+
+<body>
+
+   <header>
+    <img src="logo.png" alt="BonBonBites" class="logo-img" onerror="this.style.display='none'">
+
+    <nav>
+        <a href="#">Beranda</a>
+        <a href="#daftar-menu">Menu</a>
+
+        <!-- arah ke maps -->
+        <a href="#maps">Lokasi</a>
+
+        <!-- arah ke about -->
+        <a href="#about">About Us</a>
+
+        <div id="adminBtnText" class="admin-nav-btn" onclick="aksiSistemAdmin()">👤</div>
+
+        <div class="cart-icon" onclick="bukaRingkasan()">
+            🛒
+            <span id="cart-count">0</span>
+        </div>
+    </nav>
+</header>
+
+<section id="about">
+    <div class="about-card">
+
+        <h2>BonBonBites Story</h2>
+
+        <p class="about-text">
+            Selamat datang di <strong>BonBonBites</strong>, tempat di mana kreativitas dan cita rasa bertemu.
+            Berawal dari mimpi sederhana untuk menghadirkan bakery premium dengan kualitas terbaik,
+            kami berkomitmen menyajikan aneka roti, pastry, dan dessert yang tidak hanya lezat,
+            tetapi juga dibuat dengan sentuhan kreativitas dan penuh perhatian.
+        </p>
+
+        <p class="about-text">
+            Setiap produk BonBonBites dibuat menggunakan bahan-bahan pilihan berkualitas tinggi
+            dan dipanggang segar setiap hari untuk menjaga rasa, tekstur, serta kualitas terbaik.
+            Mulai dari Bombballs yang lembut, Boomchi Mochi Donut yang kenyal,
+            hingga berbagai pastry dan cake dengan cita rasa khas,
+            semuanya diciptakan untuk memberikan pengalaman manis yang berkesan.
+        </p>
+
+        <p class="about-text">
+            Bagi kami, BonBonBites bukan sekadar toko roti.
+            Kami ingin menjadi bagian dari momen bahagia pelanggan,
+            menghadirkan kehangatan dalam setiap gigitan,
+            dan menciptakan kenangan manis yang dapat dinikmati bersama keluarga maupun sahabat.
+        </p>
+
+    </div>
+</section>
+    <div id="admin-panel">
+        <h3 style="color: #b45309; margin-bottom: 5px; font-family: 'Playfair Display', serif;">🛠️ Panel Manajemen Menu Toko</h3>
+        <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">Tambah atau ubah menu secara live di sini.</p>
+        
+        <div style="background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <span style="font-weight: 700; font-size: 14px; color: #334155;" id="form-admin-title">Tambah Menu Baru</span>
+            <input type="hidden" id="edit-index-target" value="">
+            
+            <div class="admin-form-group">
+                <input type="text" id="menu-nama" class="admin-input-field" placeholder="Nama Menu">
+                <input type="number" id="menu-harga" class="admin-input-field" placeholder="Harga (Angka saja)">
+                <input type="text" id="menu-gambar" class="admin-input-field" placeholder="Nama File Gambar">
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 15px; justify-content: flex-end;">
+                <button id="btn-cancel-edit" class="admin-action-btn" style="background:#94a3b8; display:none;" onclick="resetFormAdmin()">Batal</button>
+                <button id="btn-save-admin" class="admin-action-btn btn-add" onclick="simpanDataMenuToko()">Tambah ke Daftar Toko</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="hero">
+    <h1>BonBonBites Bakery</h1>
+    <p>Premium Bakery & Pastry dipanggang segar setiap hari.</p>
+</section>
+
+    <section class="menu-container" id="daftar-menu">
+        <h2>Menu</h2>
+        <div class="menu-grid" id="container-grid-produk"></div>
+    </section>
+
+    <div class="floating-cart-bar" id="floatingBar" onclick="bukaRingkasan()">
+        <div class="floating-left">
+            <span>🛒</span>
+            <span id="floating-qty-text">0 Pesanan</span>
+        </div>
+        <div class="floating-right" id="floating-total-text">Rp 0</div>
+    </div>
+
+    <div class="image-modal" id="imagePreviewModal" onclick="tutupZoomGambar()">
+        <div class="image-modal-content" onclick="event.stopPropagation()">
+            <span class="image-close-btn" onclick="tutupZoomGambar()">×</span>
+            <img src="" id="img-zoom-target" alt="Pratinjau Menu">
+            <div class="image-modal-title" id="img-zoom-title">Nama Menu</div>
+        </div>
+    </div>
+
+    <div class="modal" id="variantModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="tutupModalVarian()">×</span>
+            <div class="variant-header">
+                <h3 id="v-modal-title">Nama Produk</h3>
+                <div class="base-price" id="v-modal-base-price">Harga dasar: Rp 0</div>
+            </div>
+            <div class="variant-section-title">
+                <span>Pilihan Rasa</span>
+                <span class="badge-required">Pilih minimal 1</span>
+            </div>
+            <div id="v-modal-options-list"></div>
+            <button class="checkout-final-btn" id="v-modal-submit-btn" onclick="tambahkanVarianKeKeranjang()">
+                Tambah ke Keranjang - Rp 0
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="summaryModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="tutupRingkasan()">×</span>
+            <h3 style="margin-bottom: 20px; font-family: 'Playfair Display', serif;">Isi Keranjang Belanja Anda</h3>
+            <div id="modal-list-items"></div>
+            <button class="checkout-final-btn" onclick="checkoutWhatsApp()">Kirim & Amankan Pesanan via WhatsApp</button>
+        </div>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content" style="border-radius: 24px; margin-bottom: auto; margin-top: 15vh; max-width: 400px; padding: 30px;">
+            <span class="close-btn" onclick="tutupLogin()">×</span>
+            <h3 style="margin-bottom: 15px; font-family: 'Playfair Display', serif; text-align: center;">Login Admin</h3>
+            <label style="font-size: 13px; font-weight: 600;">Username</label>
+            <input type="text" id="userInput" class="login-input" placeholder="Isi bebas apa saja...">
+            <label style="font-size: 13px; font-weight: 600;">Password</label>
+            <input type="password" id="passInput" class="login-input" placeholder="Isi bebas apa saja...">
+            <button class="checkout-final-btn" style="margin-top: 5px;" onclick="prosesLogin()">Masuk Sistem</button>
+        </div>
+    </div>
+
+   <div class="info-container">
+
+    <section class="maps-container" id="maps">
+        <h2>Lokasi Toko Kami</h2>
+
+        <div class="responsive-maps">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.9926248975894!2d106.62849777402575!3d-6.264699161329158!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69fb0021926729%3A0x77673fec3822c85a!2sBONBONBITES%20BAKERY%20GADING%20SERPONG!5e0!3m2!1sid!2sid!4v1781482038094!5m2!1sid!2sid"
+                width="100%"
+                height="350"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
+    </section>
+
+    <section class="jam-operasional">
+        <h2>Jam Operasional</h2>
+        <div class="jam-box">
+            <p>🗓️ Senin - Jumat</p>
+            <span>08.00 - 21.00 WIB</span>
+        </div>
+        <div class="jam-box">
+            <p>🗓️ Sabtu - Minggu</p>
+            <span>09.00 - 22.00 WIB</span>
+        </div>
+    </section>
+</div>
+
+    <footer>
+        <p>© 2026 Bonbon Bites Bakery. Crafted with passion.</p>
+    </footer>
+
+    <script>
+        // Reset agar data bawaan terbaru selalu termuat dengan benar
+        localStorage.removeItem("db_menu_bonbon");
+
+        const menuAwalBawaan = [
+            {
+                id: "SoftBunsSeries",
+                nama: "Soft Buns Series",
+                harga: 38000, 
+                gambar: "soft_buns.jpg",
+                varian: [
+                    { nama: "Butter Soft Buns", tambahan: 0 },
+                    { nama: "Choco Chip Soft Buns", tambahan: 7000 },
+                    { nama: "Garlic Soft Buns", tambahan: 7000 }
+                ]
+            },
+            { 
+                id: "Boomchi", 
+                nama: "Boomchi (Mochi Donut)", 
+                harga: 24000, 
+                gambar: "boomchi.jpg",
+                varian: [
+                    { nama: "Dark Choco Ganache", tambahan: 0 },
+                    { nama: "Strawberry Cheese", tambahan: 0 },
+                    { nama: "Oreo Cookies & Cream", tambahan: 2000 },
+                    { nama: "Matcha White Chocolate", tambahan: 2000 },
+                    { nama: "Salted Caramel Crunch", tambahan: 3000 },
+                    { nama: "Taro Cream Bliss", tambahan: 2000 },
+                    { nama: "Lotus Biscoff Crunch", tambahan: 3000 },
+                    { nama: "Peanut Butter Jelly", tambahan: 3000 },
+                    { nama: "Hokkaido Custard", tambahan: 2000 },
+                    { nama: "Nutella S’mores", tambahan: 3000 }
+                ]
+            },
+            { 
+                id: "BombBalls", 
+                nama: "Bombballs box of 3", 
+                harga: 65000, 
+                gambar: "bomb balls.jpg",
+                varian: [
+                    { nama: "Lotus Biscoff", tambahan: 0 },
+                    { nama: "Ubee Coconut Bombballs", tambahan: 3000 },
+                    { nama: "Honey Butterteok Bomb-balls", tambahan: 8000 },
+                    { nama: "Chocolate Brownie", tambahan: 3000 },
+                    { nama: "Pandan Kaya", tambahan: 0 },
+                    { nama: "Og Chocolate", tambahan: 0 },
+                    { nama: "Mocca Messes", tambahan: 0 },
+                    { nama: "Peanut Butter And Jelly", tambahan: 0 },
+                    { nama: "Hokkaido Custard", tambahan: 0 },
+                    { nama: "Nutella Smores", tambahan: 3000 }
+                ]
+            },
+            { 
+                id: "Brioche", 
+                nama: "Butter Brioche Truffle", 
+                harga: 32000, 
+                gambar: "brioche.png",
+                varian: [
+                    { nama: "Classic Butter Brioche", tambahan: 0 },
+                    { nama: "Chocolate Truffle Cream", tambahan: 3000 },
+                    { nama: "Nutella Lava Brioche", tambahan: 5000 },
+                    { nama: "Salted Caramel Butter", tambahan: 3000 },
+                    { nama: "Almond Honey Butter", tambahan: 3000 },
+                    { nama: "Cheese Cream Supreme", tambahan: 5000 },
+                    { nama: "Strawberry Cream Brioche", tambahan: 3000 },
+                    { nama: "Matcha White Chocolate Cream", tambahan: 5000 },
+                    { nama: "Cookies & Cream Brioche", tambahan: 3000 },
+                    { nama: "Espresso Mocha Truffle", tambahan: 5000 }
+                ]
+            },
+            { 
+                id: "Buttertteok", 
+                nama: "Buttertteok Honey Truffle", 
+                harga: 30000, 
+                gambar: "buttertteok.jpg",
+                varian: [
+                    { nama: "Classic Honey Butter", tambahan: 0 },
+                    { nama: "Honey Truffle Cream", tambahan: 3000 },
+                    { nama: "Chocolate Honey Drizzle", tambahan: 3000 },
+                    { nama: "Cheese Honey Butter", tambahan: 5000 },
+                    { nama: "Oreo Honey Crunch", tambahan: 5000 },
+                    { nama: "Matcha Honey Cream", tambahan: 5000 },
+                    { nama: "Salted Caramel Honey", tambahan: 3000 },
+                    { nama: "Peanut Butter Honey", tambahan: 3000 },
+                    { nama: "Strawberry Honey Cream", tambahan: 3000 },
+                    { nama: "Nutella Honey Bomb", tambahan: 5000 }
+                ]
+            },
+            { 
+                id: "Scones", 
+                nama: "Scones", 
+                harga: 27000, 
+                gambar: "scones.jpg",
+                varian: [
+                    { nama: "Lemon Curd Cream", tambahan: 0 },
+                    { nama: "Chocolate Chip Butter", tambahan: 0 },
+                    { nama: "Blueberry Cream Cheese", tambahan: 3000 },
+                    { nama: "Maple Butter Glaze", tambahan: 0 },
+                    { nama: "Almond Honey Crunch", tambahan: 3000 },
+                    { nama: "Cinnamon Sugar Cream", tambahan: 0 },
+                    { nama: "Strawberry Jam Butter", tambahan: 2000 },
+                    { nama: "Matcha White Cream", tambahan: 3000 },
+                    { nama: "Honey Butter Classic", tambahan: 0 },
+                    { nama: "Cookies & Cream Scones", tambahan: 3000 }
+                ]
+            },
+            { 
+                id: "MatchaCake", 
+                nama: "Matcha Cake", 
+                harga: 35000, 
+                gambar: "matcha cake.jpg",
+                varian: [
+                    { nama: "Matcha Oreo Layer Cake", tambahan: 0 },
+                    { nama: "Matcha Strawberry Cream Cake", tambahan: 3000 },
+                    { nama: "Matcha White Choco Drip Cake", tambahan: 5000 },
+                    { nama: "Matcha Red Bean Cream Cake", tambahan: 0 },
+                    { nama: "Matcha Caramel Crunch Cake", tambahan: 3000 },
+                    { nama: "Matcha Cheese Frosted Cake", tambahan: 5000 },
+                    { nama: "Matcha Nutella Cream Cake", tambahan: 5000 },
+                    { nama: "Matcha Lotus Biscoff Cake", tambahan: 5000 },
+                    { nama: "Matcha Tiramisu Cream Cake", tambahan: 5000 },
+                    { nama: "Matcha Almond Crunch Cake", tambahan: 3000 }
+                ]
+            }
+        ];
+
+        let listMenuToko = menuAwalBawaan;
+        let dataKeranjangVarian = [];
+        let indexMenuSedangDipilih = null;
+
+        window.onload = function() {
+            let dataLokal = localStorage.getItem("db_menu_bonbon");
+            if (dataLokal) {
+                listMenuToko = JSON.parse(dataLokal);
+            } else {
+                localStorage.setItem("db_menu_bonbon", JSON.stringify(listMenuToko));
+            }
+            renderDaftarMenuVisual();
+            cekStatusLoginAdmin();
+        };
+
+        function renderDaftarMenuVisual() {
+            let containerGrid = document.getElementById("container-grid-produk");
+            containerGrid.innerHTML = "";
+
+            listMenuToko.forEach((item, index) => {
+                containerGrid.innerHTML += `
+                    <div class="menu-card">
+                        <div class="product-img-wrapper" onclick="bukaZoomGambar('${item.gambar}', '${item.nama}')">
+                            <img src="${item.gambar}" alt="${item.nama}" class="product-img" onerror="this.src='logo.png'">
+                        </div>
+                        <div class="action-container">
+                            <button class="add-initial-btn" onclick="bukaModalVarian(${index})">+</button>
+                        </div>
+                        <div class="menu-info">
+                            <h3>${item.nama}</h3>
+                            <div class="price">Rp ${item.harga.toLocaleString('id-ID')}</div>
+                        </div>
+                        <div class="admin-card-controls kelas-kontrol-admin-kartu">
+                            <button class="btn-card-edit" onclick="picuIsiFormEdit(${index})">📝 Edit Menu</button>
+                            <button class="btn-card-del" onclick="hapusMenuToko(${index})">🗑️ Hapus</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            sesuaikanVisibilitasKontrolKartuAdmin();
+        }
+
+        // FUNGSI ZOOM / PREVIEW GAMBAR
+        function bukaZoomGambar(srcGambar, namaMenu) {
+            let modalZoom = document.getElementById("imagePreviewModal");
+            let targetImg = document.getElementById("img-zoom-target");
+            let targetTitle = document.getElementById("img-zoom-title");
+
+            // Jika file lokal kosong atau error, ganti ke logo bawaan agar tidak kosong
+            targetImg.src = srcGambar;
+            targetImg.onerror = function() { this.src = 'logo.png'; };
+            
+            targetTitle.innerText = namaMenu;
+            modalZoom.style.display = "flex";
+        }
+
+        function tutupZoomGambar() {
+            document.getElementById("imagePreviewModal").style.display = "none";
+        }
+
+        function bukaModalVarian(index) {
+            indexMenuSedangDipilih = index;
+            let produk = listMenuToko[index];
+
+            document.getElementById("v-modal-title").innerText = produk.nama;
+            document.getElementById("v-modal-base-price").innerText = `Harga dasar: Rp ${produk.harga.toLocaleString('id-ID')}`;
+            
+            let containerOpsi = document.getElementById("v-modal-options-list");
+            containerOpsi.innerHTML = "";
+
+            if(produk.varian && produk.varian.length > 0) {
+                produk.varian.forEach((v, idx) => {
+                    let teksTambahan = v.tambahan > 0 ? `+${v.tambahan.toLocaleString('id-ID')}` : "";
+                    containerOpsi.innerHTML += `
+                        <div class="variant-item" onclick="toggleCentangRasa(${idx})">
+                            <div class="variant-left">
+                                <input type="checkbox" id="chk-rasa-${idx}" value="${idx}" onclick="event.stopPropagation(); hitungHargaVarianLive();">
+                                <span>${v.nama}</span>
+                            </div>
+                            <div class="variant-price-add">${teksTambahan}</div>
+                        </div>
+                    `;
+                });
+            } else {
+                containerOpsi.innerHTML = `<p style="font-size:13px; color:#64748b; padding:10px;">Menu ini tidak memiliki varian rasa bawaan.</p>`;
+            }
+
+            hitungHargaVarianLive();
+            document.getElementById("variantModal").style.display = "flex";
+        }
+
+        function toggleCentangRasa(idx) {
+            let chk = document.getElementById(`chk-rasa-${idx}`);
+            if(chk) {
+                chk.checked = !chk.checked;
+                hitungHargaVarianLive();
+            }
+        }
+
+        function hitungHargaVarianLive() {
+            let produk = listMenuToko[indexMenuSedangDipilih];
+            let hargaTotal = produk.harga;
+            let centang = 0;
+
+            if(produk.varian && produk.varian.length > 0) {
+                produk.varian.forEach((v, idx) => {
+                    let chk = document.getElementById(`chk-rasa-${idx}`);
+                    if (chk && chk.checked) {
+                        hargaTotal += v.tambahan;
+                        centang++;
+                    }
+                });
+            }
+
+            let btn = document.getElementById("v-modal-submit-btn");
+            btn.innerText = `Tambah ke Keranjang - Rp ${hargaTotal.toLocaleString('id-ID')}`;
+            
+            if(produk.varian && produk.varian.length > 0) {
+                btn.disabled = centang === 0;
+            } else {
+                btn.disabled = false;
+            }
+        }
+
+        function tambahkanVarianKeKeranjang() {
+            let produk = listMenuToko[indexMenuSedangDipilih];
+            let hargaFinal = produk.harga;
+            let rasaDipilih = [];
+
+            if(produk.varian && produk.varian.length > 0) {
+                produk.varian.forEach((v, idx) => {
+                    let chk = document.getElementById(`chk-rasa-${idx}`);
+                    if (chk && chk.checked) {
+                        hargaFinal += v.tambahan;
+                        rasaDipilih.push(v.nama);
+                    }
+                });
+            }
+
+            dataKeranjangVarian.push({
+                nama: produk.nama,
+                hargaTotal: hargaFinal,
+                detailRasa: rasaDipilih.length > 0 ? rasaDipilih : ["Original"]
+            });
+
+            tutupModalVarian();
+            sinkronisasiSemualTampilan();
+            alert("Pesanan berhasil dimasukkan ke keranjang!");
+        }
+
+        function tutupModalVarian() { document.getElementById("variantModal").style.display = "none"; }
+
+        function sinkronisasiSemualTampilan() {
+            let totalBarang = dataKeranjangVarian.length;
+            let totalBiaya = 0;
+
+            dataKeranjangVarian.forEach(item => { totalBiaya += item.hargaTotal; });
+
+            document.getElementById("cart-count").innerText = totalBarang;
+            let barHijau = document.getElementById("floatingBar");
+            if (totalBarang > 0) {
+                barHijau.style.display = "flex";
+                document.getElementById("floating-qty-text").innerText = totalBarang + " Pesanan";
+                document.getElementById("floating-total-text").innerText = "Rp " + totalBiaya.toLocaleString('id-ID');
+            } else {
+                barHijau.style.display = "none";
+            }
+        }
+
+        function bukaRingkasan() {
+            let listContainer = document.getElementById("modal-list-items");
+            listContainer.innerHTML = "";
+            let adaIsi = false;
+            let totalAkhir = 0;
+
+            dataKeranjangVarian.forEach(item => {
+                adaIsi = true;
+                totalAkhir += item.hargaTotal;
+                listContainer.innerHTML += `
+                    <div class="cart-summary-item">
+                        <div class="summary-main">
+                            <span><strong>${item.nama}</strong></span>
+                            <span>Rp ${item.hargaTotal.toLocaleString('id-ID')}</span>
+                        </div>
+                        <div class="summary-details">Rasa: ${item.detailRasa.join(', ')}</div>
+                    </div>
+                `;
+            });
+
+            if (!adaIsi) {
+                alert("Keranjang belanja kamu masih kosong!");
+                return;
+            }
+            listContainer.innerHTML += `
+                <div class="summary-main" style="border-top:2px dashed #cbd5e1; margin-top:15px; padding-top:15px; font-weight:800; color:#b45309; font-size:16px;">
+                    <span>TOTAL PEMBAYARAN:</span>
+                    <span>Rp ${totalAkhir.toLocaleString('id-ID')}</span>
+                </div>
+            `;
+            document.getElementById("summaryModal").style.display = "flex";
+        }
+
+        function tutupRingkasan() { document.getElementById("summaryModal").style.display = "none"; }
+
+        function checkoutWhatsApp() {
+            let nomorWA = "6289512214258"; 
+            let pesan = "Halo Bonbon Bites, saya mau checkout pesanan berikut:\n\n";
+            let total = 0;
+            let no = 1;
+
+            dataKeranjangVarian.forEach(item => {
+                pesan += `${no}. ${item.nama} = Rp ${item.hargaTotal.toLocaleString('id-ID')}\n`;
+                pesan += `   Rasa: ${item.detailRasa.join(', ')}\n\n`;
+                total += item.hargaTotal;
+                no++;
+            });
+
+            pesan += `*Total Keseluruhan: Rp ${total.toLocaleString('id-ID')}*\n\nMohon segera diproses ya, terima kasih!`;
+
+            dataKeranjangVarian = [];
+            sinkronisasiSemualTampilan();
+            tutupRingkasan();
+            window.open("https://wa.me/" + nomorWA + "?text=" + encodeURIComponent(pesan), '_blank');
+        }
+
+        function simpanDataMenuToko() {
+            let nama = document.getElementById("menu-nama").value.trim();
+            let harga = parseInt(document.getElementById("menu-harga").value);
+            let gambar = document.getElementById("menu-gambar").value.trim();
+            let indexTarget = document.getElementById("edit-index-target").value;
+
+            if (nama === "" || isNaN(harga) || gambar === "") {
+                alert("Semua data input menu harus diisi!");
+                return;
+            }
+
+            if (indexTarget !== "") {
+                let idx = parseInt(indexTarget);
+                listMenuToko[idx].nama = nama;
+                listMenuToko[idx].harga = harga;
+                listMenuToko[idx].gambar = gambar;
+                alert("Menu Berhasil Diperbarui!");
+            } else {
+                let customId = "Menu_" + Date.now();
+                listMenuToko.push({ id: customId, nama: nama, harga: harga, gambar: gambar, varian: [] });
+                alert("Menu Baru Berhasil Ditambahkan!");
+            }
+
+            localStorage.setItem("db_menu_bonbon", JSON.stringify(listMenuToko));
+            resetFormAdmin();
+            renderDaftarMenuVisual();
+        }
+
+        function picuIsiFormEdit(index) {
+            let item = listMenuToko[index];
+            document.getElementById("menu-nama").value = item.nama;
+            document.getElementById("menu-harga").value = item.harga;
+            document.getElementById("menu-gambar").value = item.gambar;
+            document.getElementById("edit-index-target").value = index;
+
+            document.getElementById("form-admin-title").innerText = "Edit Menu: " + item.nama;
+            document.getElementById("btn-save-admin").innerText = "Simpan Perubahan";
+            document.getElementById("btn-save-admin").style.background = "#eab308";
+            document.getElementById("btn-cancel-edit").style.display = "inline-block";
+            
+            document.getElementById("admin-panel").scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hapusMenuToko(index) {
+            if (confirm("Apakah kamu yakin ingin menghapus menu '" + listMenuToko[index].nama + "'?")) {
+                listMenuToko.splice(index, 1);
+                localStorage.setItem("db_menu_bonbon", JSON.stringify(listMenuToko));
+                renderDaftarMenuVisual();
+            }
+        }
+
+        function resetFormAdmin() {
+            document.getElementById("menu-nama").value = "";
+            document.getElementById("menu-harga").value = "";
+            document.getElementById("menu-gambar").value = "";
+            document.getElementById("edit-index-target").value = "";
+            document.getElementById("form-admin-title").innerText = "Tambah Menu Baru";
+            document.getElementById("btn-save-admin").innerText = "Tambah ke Daftar Toko";
+            document.getElementById("btn-save-admin").style.background = "#16a34a";
+            document.getElementById("btn-cancel-edit").style.display = "none";
+        }
+
+        function aksiSistemAdmin() {
+            let sedangLogin = sessionStorage.getItem("adminBonbon");
+            if (sedangLogin === "aktif") {
+                sessionStorage.removeItem("adminBonbon");
+                alert("Anda berhasil keluar dari sistem admin.");
+                cekStatusLoginAdmin();
+                resetFormAdmin();
+            } else {
+                document.getElementById("userInput").value = "";
+                document.getElementById("passInput").value = "";
+                document.getElementById("loginModal").style.display = "flex";
+            }
+        }
+
+        function tutupLogin() { document.getElementById("loginModal").style.display = "none"; }
+
+        function prosesLogin() {
+            let user = document.getElementById("userInput").value.trim();
+            let pass = document.getElementById("passInput").value.trim();
+
+            if (user !== "" && pass !== "") {
+                sessionStorage.setItem("adminBonbon", "aktif");
+                alert("Login Sukses!");
+                tutupLogin();
+                cekStatusLoginAdmin();
+            } else {
+                alert("Username dan Password tidak boleh kosong!");
+            }
+        }
+
+        function cekStatusLoginAdmin() {
+            let status = sessionStorage.getItem("adminBonbon");
+            let panelAdmin = document.getElementById("admin-panel");
+            let tombolHeader = document.getElementById("adminBtnText");
+
+            if (status === "aktif") {
+                panelAdmin.style.display = "block";
+                tombolHeader.style.background = "#fef2f2"; 
+                tombolHeader.style.color = "#ef4444"; 
+                tombolHeader.style.border = "1px solid #fca5a5";
+            } else {
+                panelAdmin.style.display = "none";
+                tombolHeader.style.background = "#f1f5f9"; 
+                tombolHeader.style.color = "#475569"; 
+                tombolHeader.style.border = "none";
+            }
+            sesuaikanVisibilitasKontrolKartuAdmin();
+        }
+
+        function sesuaikanVisibilitasKontrolKartuAdmin() {
+            let status = sessionStorage.getItem("adminBonbon");
+            document.querySelectorAll(".kelas-kontrol-admin-kartu").forEach(box => {
+                box.style.display = (status === "aktif") ? "flex" : "none";
+            });
+        }
+    </script>
+</body>
+</html>
